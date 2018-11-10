@@ -77,28 +77,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Checking if we have a winner or a draw, if winner then dropping Alert and resetting the table + adding points + switching players
         if (checkWin()) {
             if (playerSwitch) {
+                p1Points++;
                 new AlertDialog.Builder(this)
                         .setTitle("X Wins this one! Congrats.")
                         .setPositiveButton("Ok", this)
                         .create().show();
-                p1Points++;
-                updatePoints(true, p1Points);
-                reset();
+                //reset(playerSwitch, p1Points);
             } else {
+                p2Points++;
                 new AlertDialog.Builder(this)
                         .setTitle("O Wins this one! Congrats.")
                         .setPositiveButton("Ok", this)
                         .create().show();
-                p2Points++;
-                updatePoints(false, p2Points);
-                reset();
+                //reset(playerSwitch, p2Points);
             }
         } else if (roundCount == 9) {
+            roundCount++;
             new AlertDialog.Builder(this)
                     .setTitle("Draw, I'm sorry!")
                     .setPositiveButton("Ok", this)
                     .create().show();
-            reset();
+            //reset(false, p2Points);
         } else {
             playerSwitch = !playerSwitch;
         }
@@ -134,8 +133,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //updatePoints function
-    private void updatePoints(boolean w, int points){
-        if(w){
+    private void updatePoints(int points){
+        if(playerSwitch){
             txt_p1.setText(String.valueOf(points));
         }else{
             txt_p2.setText(String.valueOf(points));
@@ -143,19 +142,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //reset function, this resets the table to blank, make X the next player and reset roundCount
-    private void reset(){
+    private void reset(int points){
         for (int x = 0; x < 3; x++){
             for (int y = 0; y < 3; y++){
                 allButtons[x][y].setText("");
             }
         }
-        playerSwitch = true;
-        roundCount = 0;
+        if (roundCount == 10){
+            playerSwitch = true;
+            roundCount = 0;
+        }else{
+            updatePoints(points);
+            playerSwitch = true;
+            roundCount = 0;
+        }
     }
 
     //onClick function needed for the Alerts
     @Override
     public void onClick(DialogInterface dialog, int which) {
-
+        if (playerSwitch){
+            reset(p1Points);
+        }else{
+            reset(p2Points);
+        }
     }
 }
